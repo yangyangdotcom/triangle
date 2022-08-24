@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import math
 from biopandas.pdb import PandasPdb
 from itertools import combinations
 from scipy.spatial import distance
@@ -55,36 +56,63 @@ atom = atom[['atom_number', 'x_coord', 'y_coord', 'z_coord']]
 atom_number = atom['atom_number'].tolist()
 # atom.to_csv('test.csv')
 
-# atom_dis_dict = {}
-# for i in range(len(atom.index)):
-#     for j in range(i+1,len(atom.index)):
-#         if(i != j):
-#             #bundle the coord of the atom
-#             x1 = atom['x_coord'][i]
-#             y1 = atom['y_coord'][i]
-#             z1 = atom['z_coord'][i]
-#             a = (x1,y1,z1)
+atom_dis_dict = {}
+for i in range(len(atom.index)):
+    for j in range(i+1,len(atom.index)):
+        if(i != j):
+            #bundle the coord of the 1st atom
+            x1 = atom['x_coord'][i]
+            y1 = atom['y_coord'][i]
+            z1 = atom['z_coord'][i]
+            a = (x1,y1,z1)
 
-#             #bundle the coord of the hetatm
-#             x2 = atom['x_coord'][j]
-#             y2 = atom['y_coord'][j]
-#             z2 = atom['z_coord'][j]
-#             b = (x2,y2,z2)
+            #bundle the coord of the 2nd atom
+            x2 = atom['x_coord'][j]
+            y2 = atom['y_coord'][j]
+            z2 = atom['z_coord'][j]
+            b = (x2,y2,z2)
 
-#             atom_number_list = (i,j)
-#             atom_number_tuple = tuple(atom_number_list)
-#             #calculate the euclidean distance
-#             dist = str(distance.euclidean(a,b))
-#             atom_dis_dict[atom_number_tuple] = dist
+            atom_number_list = (i,j)
+            atom_number_tuple = tuple(atom_number_list)
+            #calculate the euclidean distance
+            dist = str(distance.euclidean(a,b))
+            atom_dis_dict[atom_number_tuple] = dist
 
-# print(atom_dis_dict)
+print(atom_dis_dict)
 
 counter = 0
 
 tmp = combinations(atom_number,3)
-for i in list(tmp):
-    counter = counter+1
-    print(i)
+list_of_atom_combi = list(tmp)
+# for i in list(tmp):
+#     counter = counter+1
+#     print(i)
 
-print(counter)
+final_df = pd.DataFrame(list_of_atom_combi, columns=["atom1", "atom2", "atom3"])
+final_df['D(1,2)'] = ""
+final_df['D(2,3)'] = ""
+final_df['D(1,3)'] = ""
+final_df['A(1)'] = ""
+final_df['A(2)'] = ""
+final_df['A(3)'] = ""
+#this process might be time consuming
+# final_df["D(1,2)"] = list(zip(final_df["atom1"],final_df["atom2"]))
+# final_df["D(2,3)"] = list(zip(final_df["atom2"],final_df["atom3"]))
+# final_df["D(1,3)"] = list(zip(final_df["atom1"],final_df["atom3"]))
+
+for i in range(len(final_df.index)):
+    a1 = (final_df["atom1"][i], final_df["atom2"][i])
+    a2 = (final_df["atom2"][i], final_df["atom3"][i])
+    a3 = (final_df["atom1"][i], final_df["atom3"][i])
+
+    final_df.at['D(1,2)', i] = atom_dis_dict[a1]
+    final_df.at['D(2,3)', i] = atom_dis_dict[a2]
+    final_df.at['D(1,3)', i] = atom_dis_dict[a3]
+
+    final_df.at['A(1)', i] = math.cos(final_df.iat['D(1,2)', i])
+    final_df.at['A(2)', i] = math.cos(final_df.iat['D(2,3)', i])
+    final_df.at['A(3)', i] = math.cos(final_df.iat['D(1,3)', i])
+
+print(final_df)
+final_df.to_csv("final.csv")
 
