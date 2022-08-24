@@ -109,9 +109,9 @@ for i in range(len(final_df.index)):
     final_df.at['D(2,3)', i] = atom_dis_dict[a2]
     final_df.at['D(1,3)', i] = atom_dis_dict[a3]
 
-    final_df.at['A(1)', i] = math.cos(final_df.iat['D(1,2)', i])
-    final_df.at['A(2)', i] = math.cos(final_df.iat['D(2,3)', i])
-    final_df.at['A(3)', i] = math.cos(final_df.iat['D(1,3)', i])
+    final_df.at['A(1)', i] = math.cos(float(final_df.loc['D(1,2)', i]))
+    final_df.at['A(2)', i] = math.cos(float(final_df.loc['D(2,3)', i]))
+    final_df.at['A(3)', i] = math.cos(float(final_df.loc['D(1,3)', i]))
 
 print(final_df)
 final_df.to_csv("final.csv")
