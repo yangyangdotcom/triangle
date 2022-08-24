@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH -p workq
+#SBATCH -n 48
+#SBATCH -t 10:00:00
+#SBATCH -A loni_tsr_1
+#SBATCH -N 1
+#SBATCH -J triangle
+#SBATCH -o %j-output_triangle.out
+#SBATCH -e %j-error_triangle.err
+
+cd $SLURM_SUBMIT_DIR
+
+#module load python/3.7.6
+#source /work/bentcy/envi/bin/activate
+python triangle.py
