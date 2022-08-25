@@ -8,49 +8,6 @@ from scipy.spatial import distance
 import csv
 ppdb = PandasPdb().fetch_pdb('3eiy')
 
-def readSample(filename):
-    df = pd.read_csv(filename)
-    # print(df)
-    protein_file = df["protein"]
-    chain = df["chain"]
-    lig_id = df["ligand_id"]
-    return protein_file, chain, lig_id
-
-# protein_file,chain,lig_id = readSample("sample_details.csv")
-# protein_file, chain, lig_id = readSample("sample_details.csv")
-
-def readPDBfile(filename):
-    ppdb.read_pdb(filename)
-    #split the file into ATOM and HETATM
-    
-    #ATOM part
-    recordName = ppdb.df['ATOM']['record_name']
-    atomNo = ppdb.df['ATOM']['atom_number']
-    residueName = ppdb.df['ATOM']['residue_name']
-    chain_id = ppdb.df['ATOM']['chain_id']
-    residueNumber = ppdb.df['ATOM']['residue_number']
-    xCor = ppdb.df['ATOM']['x_coord']
-    yCor = ppdb.df['ATOM']['y_coord']
-    zCor = ppdb.df['ATOM']['z_coord']
-
-    d = {'record_name':recordName, 'atom_number':atomNo, 'residue_name':residueName,'chain_id':chain_id, 'residue_number':residueNumber
-        ,'x_coord':xCor, 'y_coord':yCor, 'z_coord':zCor}
-    atom = pd.DataFrame(data=d)
-
-    #HETATM part
-    recordName = ppdb.df['HETATM']['record_name']
-    atomNo = ppdb.df['HETATM']['atom_number']
-    residueName = ppdb.df['HETATM']['residue_name']
-    chain = ppdb.df['HETATM']['chain_id']
-    xCor = ppdb.df['HETATM']['x_coord']
-    yCor = ppdb.df['HETATM']['y_coord']
-    zCor = ppdb.df['HETATM']['z_coord']
-    
-    d = {'record_name':recordName, 'atom_number':atomNo, 'residue_name':residueName, 'chain_id':chain,'x_coord':xCor, 'y_coord':yCor, 'z_coord':zCor}
-    hetatm = pd.DataFrame(data=d)
-    
-    return atom, hetatm
-
 def calculate_dist(atom):
     atom_dis_dict = {}
     print(len(atom.index))
